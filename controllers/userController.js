@@ -1,4 +1,9 @@
 const { response } = require("express");
+const bcrypt = require("bcryptjs");
+
+const Usuario = require("../models/user");
+
+
 
 const userGet = (req, res = response) => {
     // const queryParams = req.query; // Obtiene los parámetros de la petición
@@ -11,15 +16,42 @@ const userGet = (req, res = response) => {
   });
 };
 
-const userPost = (req, res = response) => {
+const userPost = async (req, res = response) => {
+
+   
+
     // const body = req.body; // Obtiene todo el body de la petición
-    const { nombre, edad } = req.body; // Obtiene el body de la petición y lo desestructura
+    // const { nombre, edad } = req.body; // Obtiene el body de la petición y lo desestructura
+    const { name, email, password, role } = req.body; // Obtiene el body de la petición y lo desestructura
+    
+    const usuario = new Usuario({
+        name,
+        email,
+        password,
+        role,
+    });
+    
+    // verificar si el correo existe
+    const existeEmail = await Usuario.findOne({ email});
+    if (existeEmail) {
+        return res.status(400).json({
+            msg: "El correo ya está registrado",
+        });
+    }
+
+    // Encriptar la contraseña
+    const salt = bcrypt.genSaltSync();
+    usuario.password = bcrypt.hashSync(password, salt);
+
+
+    // Guardar en BD
+    await usuario.save();
 
     res.status(201).json({
-        msg: "post API - controller",
-        // body,
-        name : nombre,
-        age: edad,
+        msg: "posts API - controller",
+        usuario
+        // name : nombre,
+        // age: edad,
     });
 };
 
