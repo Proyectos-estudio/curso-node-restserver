@@ -2,6 +2,7 @@ const { response } = require("express");
 const bcrypt = require("bcryptjs");
 
 const Usuario = require("../models/user");
+const { emailExists } = require("../helpers/db-validators");
 
 
 
@@ -17,10 +18,7 @@ const userGet = (req, res = response) => {
 };
 
 const userPost = async (req, res = response) => {
-
-   
-
-    // const body = req.body; // Obtiene todo el body de la petición
+ // const body = req.body; // Obtiene todo el body de la petición
     // const { nombre, edad } = req.body; // Obtiene el body de la petición y lo desestructura
     const { name, email, password, role } = req.body; // Obtiene el body de la petición y lo desestructura
     
@@ -31,14 +29,6 @@ const userPost = async (req, res = response) => {
         role,
     });
     
-    // verificar si el correo existe
-    const existeEmail = await Usuario.findOne({ email});
-    if (existeEmail) {
-        return res.status(400).json({
-            msg: "El correo ya está registrado",
-        });
-    }
-
     // Encriptar la contraseña
     const salt = bcrypt.genSaltSync();
     usuario.password = bcrypt.hashSync(password, salt);
