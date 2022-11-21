@@ -80,7 +80,7 @@ const userDelete = async (req, res = response) => {
 
     const {id}= req.params;
 
-    // Eliminación física
+    // Eliminación físicas
     // const user = await Usuario.findByIdAndDelete(id); // no se recomienda usar por que no se puede recuperar y se pierde integridad de datos
 
     const user = await Usuario.findByIdAndUpdate(id, {status: false});
