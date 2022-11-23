@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const { check } = require("express-validator");
 
+// Controllers
 const {
   userGet,
   userPut,
@@ -8,11 +9,17 @@ const {
   userDelete,
 } = require("../controllers/userController");
 
+// Helpers
 const { isRoleValid, emailExists, userExistsById } = require("../helpers/db-validators");
-const { validarCampos } = require("../middlewares/validar-campos");
 
+// Middlewares
+const { validarCampos } = require("../middlewares/validar-campos");
+const { validateJWT } = require("../middlewares/validate-jwt");
+
+// use Router() to create a new router object
 const router = Router();
 
+// Routes
 router.get("/", userGet);
 
 router.put("/:id",[
@@ -34,6 +41,7 @@ router.post("/", [
 ] ,userPost);
 
 router.delete("/:id",[
+  validateJWT,
   check("id", "No es un ID válido").isMongoId(),
   check("id").custom(userExistsById),
   validarCampos
